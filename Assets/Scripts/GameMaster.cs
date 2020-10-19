@@ -43,7 +43,7 @@ public class GameMaster : MonoBehaviour
     {
         instance = this;
         PlayerPrefs.DeleteAll();
-        PlayerPrefs.SetInt("level", 2);
+        PlayerPrefs.SetInt("level", 4);
     }
 
     private void Start()

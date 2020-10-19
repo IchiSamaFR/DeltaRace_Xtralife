@@ -493,11 +493,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 230abd468ce64c94082996cf2ae27b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialSpeed: 12
+  initialSpeed: 8
   actualSpeed: 0
-  maxSpeed: 22
+  maxSpeed: 18
   minSpeed: 6
-  dive_SpeedMult: 0.2
+  dive_SpeedMult: 0.3
   flyup_SpeedMult: 0.12
   dive_TransfMult: 150
   dive_Max: 65

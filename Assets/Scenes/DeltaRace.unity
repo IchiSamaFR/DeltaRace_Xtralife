@@ -1135,70 +1135,88 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levels:
-  - name: 
+  - name: 1 - Test Simple Cliff
     wallTiles: S.._.._.._..E
     otherTiles: ..ud.u
-  - name: 
+  - name: 2 - Simple Cliff + Big
     wallTiles: S.._..b.._..E
-    otherTiles: '.....U...'
-  - name: 
+    otherTiles: ..u..U...c
+  - name: 3 - Big Little Big
     wallTiles: S..b.._..b..E
-    otherTiles: ..U..u.s
-  - name: 
-    wallTiles: S..b..-._.-.E
-    otherTiles: ..ud.U...
-  - name: 
-    wallTiles: S..b..-._.-.E
-    otherTiles: ..ud.U...
-  - name: 
-    wallTiles: S..b..-._.-.E
-    otherTiles: ..ud.U...
-  - name: 
-    wallTiles: S..b..-._.-.E
-    otherTiles: ..ud.U...
+    otherTiles: ..U..us
+  - name: 4 - Plateform start
+    wallTiles: S..b..-.._.-.E
+    otherTiles: ..U...S.u
+  - name: 5
+    wallTiles: S.._..-.._..b.._.b..-.._..E
+    otherTiles: ..ud..b..c.U...c....C.u.c
   tiles:
-  - name: 83
+  - tileName: S - START CLIFF -
+    name: 83
     prefab: {fileID: 6261134114707967808, guid: 027dd3c7d4768a24f9388949ee293326,
       type: 3}
-  - name: 95
+  - tileName: _ - Little Cliff
+    name: 95
     prefab: {fileID: 8553324332490595089, guid: 2cc420596cc909f438977e23567017fa,
       type: 3}
-  - name: 98
+  - tileName: b - High Cliff
+    name: 98
     prefab: {fileID: 8897876232232717255, guid: a66a03f1a151e704a85cfdac0e070bdf,
       type: 3}
-  - name: 101
+  - tileName: e - Cliff Proch
+    name: 101
     prefab: {fileID: 3267059183249230984, guid: d6ed2366e0c9b2a449fd842b04af414f,
       type: 3}
-  - name: 115
-    prefab: {fileID: 6261134114707967808, guid: 027dd3c7d4768a24f9388949ee293326,
-      type: 3}
-  - name: 69
+  - tileName: E - END CLIFF -
+    name: 69
     prefab: {fileID: 6225833309474905558, guid: 93d3b823be7a9984da90584e294b255c,
       type: 3}
-  - name: 45
+  - tileName: '- - Flying Plateform'
+    name: 45
     prefab: {fileID: 4526929275971000276, guid: 038368d436940ff469c48e20e1958be7,
       type: 3}
   tilesOther:
-  - name: 117
+  - tileName: u - Coins Cliff Little Up
+    name: 117
     prefab: {fileID: 7744821061072056611, guid: a7e5e6c0f5b500a4781b59c47eb31eeb,
       type: 3}
-  - name: 100
+  - tileName: d - Coins Cliff Little Down
+    name: 100
     prefab: {fileID: 6966515665939149093, guid: 8e99e3bad845dad4bb94c71e1bd99548,
       type: 3}
-  - name: 85
+  - tileName: U - Coins Cliff Big Up
+    name: 85
     prefab: {fileID: 3771113607861338312, guid: ef98ebeda46caba40b855bc640d47b55,
       type: 3}
-  - name: 68
+  - tileName: D - Coins Cliff Big Down
+    name: 68
     prefab: {fileID: 8519206392084625065, guid: e40e00641974f2b44aeada015ba550d4,
       type: 3}
-  - name: 115
+  - tileName: s - Speed Boost Mid
+    name: 115
     prefab: {fileID: 6848703529667331333, guid: 58ec6d55aedc5e2499378f9e5b8a0655,
       type: 3}
-  - name: 83
+  - tileName: S - Speed Boost Top
+    name: 83
     prefab: {fileID: 7711665343038324956, guid: d3d8d8e352b9f9f439351da07495e412,
       type: 3}
-  - name: 36
+  - tileName: $ - Speed Boost Bot
+    name: 36
     prefab: {fileID: 5958458123477463139, guid: 1208aae647489a24ba33118ae1f06fbc,
+      type: 3}
+  - tileName: b - Spe. Boost Top + Coins Mid
+    name: 98
+    prefab: {fileID: 680742905992486820, guid: af2fbd44f019ad147b1e7363fa99e11b, type: 3}
+  - tileName: B - Spe. Boost Mid + Coins Top
+    name: 66
+    prefab: {fileID: 564067321029471314, guid: afc4e2cc4c97d704887d2fcd714553e2, type: 3}
+  - tileName: c - Coins Mid
+    name: 99
+    prefab: {fileID: 6470472330694643370, guid: 5d3b7fee910c0924e86cc1b8c9994e0e,
+      type: 3}
+  - tileName: C - Coins Top
+    name: 67
+    prefab: {fileID: 1284927622473674985, guid: f869932eb63ad7d478c1f151c147a7ea,
       type: 3}
   tilesContent: {fileID: 1670426418}
   otherContent: {fileID: 939574415}
@@ -2522,7 +2540,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1.0000004, z: 1}
-  m_Center: {x: 0, y: -0.1, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0.5}
 --- !u!1 &680138084
 GameObject:
   m_ObjectHideFlags: 0

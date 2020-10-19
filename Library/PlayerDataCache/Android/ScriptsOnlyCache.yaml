@@ -37,7 +37,7 @@ ScriptsOnlyBuild:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
   sceneClasses:
-    Assets/Scenes/DeltaRace - Mockup.unity:
+    Assets/Scenes/DeltaRace.unity:
     - Class: 1
       Script: {instanceID: 0}
     - Class: 4
@@ -845,5 +845,5 @@ ScriptsOnlyBuild:
     className: MapGeneration
   platform: 13
   scenePathNames:
-  - Assets/Scenes/DeltaRace - Mockup.unity
+  - Assets/Scenes/DeltaRace.unity
   playerPath: E:/8secTest/8sec DeltaRace Build/build.apk

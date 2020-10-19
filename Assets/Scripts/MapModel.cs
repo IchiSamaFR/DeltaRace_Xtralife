@@ -13,6 +13,7 @@ public class MapModel
 [System.Serializable]
 public class TilePrefab
 {
+    public string tileName;
     public char name;
     public GameObject prefab;
 }
