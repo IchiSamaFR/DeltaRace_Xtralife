@@ -35,7 +35,6 @@ public class PlayerMovements : DeltaMovements
         if (!gm.started && (Input.GetMouseButtonDown(0) || Input.touchCount > 0) && !gm.IsOverUI())
         {
             gm.StartGame();
-            actualSpeed = initialSpeed;
         }
 
         if (!isDead && gm.started)
@@ -92,11 +91,11 @@ public class PlayerMovements : DeltaMovements
     {
         if (other.CompareTag("Wall"))
         {
-            GetDmg();
+            GetDmg(other.gameObject);
         }
         else if (other.CompareTag("Water"))
         {
-            GetDmg(initialLives, "instantDeath");
+            GetDmg(other.gameObject, initialLives, "instantDeath");
         }
         else if (other.CompareTag("Finish"))
         {

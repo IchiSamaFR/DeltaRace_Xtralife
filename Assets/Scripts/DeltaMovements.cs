@@ -32,7 +32,8 @@ public class DeltaMovements : MonoBehaviour
     bool canTakeDmg = true;
     public GameObject deadParticles;
 
-
+    GameObject lastHitted;
+    GameObject lastBoost;
     Animator anim;
 
     public virtual void _init_()
@@ -43,6 +44,7 @@ public class DeltaMovements : MonoBehaviour
         }
         lives = initialLives;
         isDead = false;
+        actualSpeed = initialSpeed;
         anim = GetComponent<Animator>();
         anim.SetBool("isDead", false);
     }
@@ -141,6 +143,7 @@ public class DeltaMovements : MonoBehaviour
 
         actualSpeed = Mathf.Lerp(actualSpeed, maxSpeed, _diff / 3 * Time.deltaTime);
     }
+
     void Accelerate()
     {
         float _diff = actualSpeed - minSpeed;
@@ -151,9 +154,9 @@ public class DeltaMovements : MonoBehaviour
     /* Get dmg like when collide with a cliff / wall
      * 
      */
-    public void GetDmg(int _dmg = 1, string type = "")
+    public void GetDmg(GameObject cliff, int _dmg = 1, string type = "")
     {
-        if (!canTakeDmg && type != "instantDeath")
+        if (!canTakeDmg && type != "instantDeath" || lastHitted == cliff)
         {
             return;
         }
@@ -164,7 +167,7 @@ public class DeltaMovements : MonoBehaviour
         }
         else
         {
-            canTakeDmg = false;
+            lastHitted = cliff;
             actualSpeed *= speedMultiplDmg;
             anim.SetBool("getDmg", true);
             StartCoroutine("invicible");
@@ -181,14 +184,26 @@ public class DeltaMovements : MonoBehaviour
      */
     public IEnumerator invicible()
     {
+        canTakeDmg = false;
         yield return new WaitForSeconds(timeBeforeNextDmg);
         canTakeDmg = true;
         anim.SetBool("getDmg", false);
     }
 
-    public void SpeedBoost(float multipl)
+    public bool SpeedBoost(float multipl)
     {
         actualSpeed *= multipl;
+        return true;
+    }
+    public bool SpeedBoost(float multipl, GameObject cliff)
+    {
+        if(lastHitted != cliff && lastBoost != cliff)
+        {
+            lastBoost = cliff;
+            actualSpeed *= multipl;
+            return true;
+        }
+        return false;
     }
 
 }

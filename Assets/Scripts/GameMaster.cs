@@ -6,23 +6,30 @@ using TMPro;
 
 public class GameMaster : MonoBehaviour
 {
-    public static GameMaster instance; 
+    public static GameMaster instance;
     public Transform playerSpawn;
     public GameObject player;
+    public bool win = false;
+    public bool loose = false;
     public int coins;
+
+    [Header("IA")]
+    public Transform enemySpawn;
+    public GameObject enemyPref;
+    public GameObject enemy;
 
     [Header("Start Panel")]
     public GameObject canvas;
-    public GameObject[] startToHide;
-    public GameObject[] startToShow;
-    public TextMeshProUGUI levelText;
     public GameObject[] checkUIOver;
     public GameObject[] infiniteButtons = new GameObject[2];
+    public GameObject shopMenu;
+    public GameObject startMenu;
 
     [Header("Restart Panel")]
     public int raceCoinGet = 0;
     public GameObject loosePanel;
     public TextMeshProUGUI txtCoinsGet;
+    public TextMeshProUGUI txtEndInfos;
 
     [Header("Restart Panel")]
     public GameObject nextPanel;
@@ -42,8 +49,6 @@ public class GameMaster : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.SetInt("level", 4);
     }
 
     private void Start()
@@ -52,7 +57,7 @@ public class GameMaster : MonoBehaviour
         level = PlayerPrefs.GetInt("level");
         mg = MapGeneration.instance;
         coinsTextField.text = coins.ToString();
-
+        
         GoToMainMenu();
     }
 
@@ -65,32 +70,42 @@ public class GameMaster : MonoBehaviour
     {
         started = true;
         raceCoinGet = 0;
-
-        foreach (GameObject obj in startToHide)
-        {
-            obj.SetActive(false);
-        }
-        foreach (GameObject obj in startToShow)
-        {
-            obj.SetActive(true);
-        }
-        levelText.text = level.ToString();
-
+        
+        startMenu.SetActive(false);
     }
 
     public void PlayerDeath()
     {
+        loose = true;
         loosePanel.SetActive(true);
         nextPanel.SetActive(false);
         txtCoinsGet.text = "+ " + raceCoinGet.ToString();
         PlayerPrefs.SetInt("coins", coins);
         PlayerPrefs.Save();
+
+        if (infinite)
+        {
+            if((int)player.transform.position.z > PlayerPrefs.GetInt("bestRace"))
+            {
+                PlayerPrefs.SetInt("bestRace", (int)player.transform.position.z);
+                txtEndInfos.text = "New best score : " + ((int)player.transform.position.z).ToString();
+            }
+            else
+            {
+                txtEndInfos.text = "Actual best score : " + PlayerPrefs.GetInt("bestRace").ToString();
+            }
+        }
+        else
+        {
+            txtEndInfos.text = "Unlucky you loose ! Try again !";
+        }
     }
 
     public void GoToMainMenu()
     {
         loosePanel.SetActive(false);
         nextPanel.SetActive(false);
+        shopMenu.SetActive(false);
 
         player.transform.position = playerSpawn.transform.position;
         player.transform.rotation = playerSpawn.transform.rotation;
@@ -98,22 +113,9 @@ public class GameMaster : MonoBehaviour
 
         started = false;
 
-        foreach (GameObject obj in startToHide)
-        {
-            obj.SetActive(true);
-        }
-        foreach (GameObject obj in startToShow)
-        {
-            obj.SetActive(false);
-        }
+        startMenu.SetActive(true);
 
-        if (infinite)
-        {
-            infiniteButtons[0].SetActive(false);
-            infiniteButtons[1].SetActive(true);
-        }
-
-        mg.GenLevel();
+        SetMode();
     }
 
     public void NextLevel()
@@ -128,8 +130,10 @@ public class GameMaster : MonoBehaviour
 
     public void Win()
     {
+        win = true;
         nextPanel.SetActive(true);
         txtNextCoinsGet.text = "+ " + raceCoinGet.ToString();
+        txtEndInfos.text = "Good job ! You won !";
         NextLevel();
     }
 
@@ -159,6 +163,7 @@ public class GameMaster : MonoBehaviour
         coinsTextField.text = coins.ToString();
         PlayerPrefs.SetInt("coins", coins);
         PlayerPrefs.Save();
+        GoToMainMenu();
     }
 
     /* Add coin by looking an ad
@@ -169,6 +174,20 @@ public class GameMaster : MonoBehaviour
         coinsTextField.text = coins.ToString();
         PlayerPrefs.SetInt("coins", coins);
         PlayerPrefs.Save();
+        GoToMainMenu();
+    }
+
+    public bool Buy(int amount)
+    {
+        if(coins >= amount)
+        {
+            coins -= amount;
+            coinsTextField.text = coins.ToString();
+            PlayerPrefs.SetInt("coins", coins);
+            PlayerPrefs.Save();
+            return true;
+        }
+        return false;
     }
 
     /* Check if mouse is over ui or not
@@ -199,5 +218,39 @@ public class GameMaster : MonoBehaviour
         }
 
         return false;
+    }
+
+    void SetMode()
+    {
+        Destroy(enemy);
+        if (PlayerPrefs.GetInt("mode") == 0)
+        {
+            infinite = false;
+            infiniteButtons[0].SetActive(true);
+            infiniteButtons[1].SetActive(false);
+            mg.GenLevel();
+            enemy = Instantiate(enemyPref);
+            enemy.transform.position = enemySpawn.transform.position;
+        }
+        else
+        {
+            infinite = true;
+            infiniteButtons[0].SetActive(false);
+            infiniteButtons[1].SetActive(true);
+            mg.GenRandomLevel();
+        }
+    }
+
+    public void ChangeMode(string mode)
+    {
+        if(mode == "infinite")
+        {
+            PlayerPrefs.SetInt("mode", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("mode", 0);
+        }
+        SetMode();
     }
 }

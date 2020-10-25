@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MapGeneration : MonoBehaviour
 {
@@ -17,10 +18,40 @@ public class MapGeneration : MonoBehaviour
     public GameObject tilesContent;
     public GameObject otherContent;
 
+    /********** Infinite Mode **********/
+    [Header("Random")]
+    [SerializeField]
+    public List<MapModel> randomPref = new List<MapModel>();
+    /********** Infinite Mode **********/
+
     [Header("UI")]
     public Image distance;
+    public GameObject distanceBar;
+    public TextMeshProUGUI distanceInfinite;
+    public GameObject distanceInfiniteBar;
+    public TextMeshProUGUI levelText;
     float arrival;
     Transform player;
+
+
+    /********** Infinite Mode **********/
+    string randomGenTiles = "";
+    string randomGenOther = "";
+    int alreadyGen = 0;
+    class structGen
+    {
+        public int pos;
+        public GameObject obj;
+        public structGen(int _pos, GameObject _obj)
+        {
+            pos = _pos;
+            obj = _obj;
+        }
+    }
+    List<structGen> mapGenerated = new List<structGen>();
+    /********** Infinite Mode **********/
+
+    List<CliffPath> cliffPaths = new List<CliffPath>();
 
     private void Awake()
     {
@@ -36,14 +67,45 @@ public class MapGeneration : MonoBehaviour
 
     private void Update()
     {
-        if (gm.started)
+        if (gm.started && !gm.infinite)
         {
+            if (!distanceBar.activeSelf)
+            {
+                distanceBar.SetActive(true);
+            }
             float _zPos = player.position.z;
             distance.fillAmount = _zPos / arrival;
         }
         else
         {
-            distance.fillAmount = 0;
+            if (distanceBar.activeSelf)
+            {
+                distanceBar.SetActive(false);
+            }
+        }
+
+        if(gm.started && gm.infinite)
+        {
+            ContinueGenLevel();
+            if (!distanceInfiniteBar.activeSelf)
+            {
+                distanceInfiniteBar.SetActive(true);
+            }
+            if(player.position.z < 10000)
+            {
+                distanceInfinite.text = ((int)player.position.z).ToString();
+            }
+            else
+            {
+                distanceInfinite.text = ((int)player.position.z / 1000).ToString() + "k";
+            }
+        }
+        else
+        {
+            if (distanceInfiniteBar.activeSelf)
+            {
+                distanceInfiniteBar.SetActive(false);
+            }
         }
     }
 
@@ -101,6 +163,8 @@ public class MapGeneration : MonoBehaviour
             _currentLevel = currentLevel;
         }
 
+        cliffPaths = new List<CliffPath>();
+
         foreach (Transform child in tilesContent.transform)
         {
             Destroy(child.gameObject);
@@ -123,6 +187,11 @@ public class MapGeneration : MonoBehaviour
                         if (c == 'E')
                         {
                             arrival = _count * 10;
+                        }
+
+                        if (obj.GetComponent<CliffPath>())
+                        {
+                            cliffPaths.Add(obj.GetComponent<CliffPath>());
                         }
                         break;
                     }
@@ -147,5 +216,106 @@ public class MapGeneration : MonoBehaviour
             }
             _countOther += 1;
         }
+        levelText.text = _currentLevel.ToString();
+    }
+    
+    public void GenRandomLevel()
+    {
+        foreach (Transform child in tilesContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (Transform child in otherContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        randomGenTiles = "S..";
+        randomGenOther = "...";
+        alreadyGen = 0;
+        ContinueGenLevel();
+    }
+
+    void ContinueGenLevel()
+    {
+        while (player.position.z / 10 > randomGenTiles.Length - 14)
+        {
+            if(randomPref.Count == 0)
+            {
+                break;
+            }
+            int test = Random.Range(0, randomPref.Count);
+            randomGenTiles += randomPref[test].wallTiles;
+            randomGenOther += randomPref[test].otherTiles;
+        }
+        int _count = 0;
+        foreach (char c in randomGenTiles)
+        {
+            if (_count >= alreadyGen && c != '.')
+            {
+                foreach (TilePrefab tile in tiles)
+                {
+                    if (tile.name == c)
+                    {
+                        GameObject obj = Instantiate(tile.prefab, tilesContent.transform);
+                        obj.transform.position = new Vector3(-2f, -0.5f, _count * 10);
+                        mapGenerated.Add(new structGen(_count, obj));
+                        break;
+                    }
+                }
+            }
+            _count += 1;
+        }
+        int _countOther = 0;
+        foreach (char c in randomGenOther)
+        {
+            if (_countOther >= alreadyGen && c != '.')
+            {
+                foreach (TilePrefab tile in tilesOther)
+                {
+                    if (tile.name == c)
+                    {
+                        GameObject obj = Instantiate(tile.prefab, otherContent.transform);
+                        obj.transform.position = new Vector3(0, 0, _countOther * 10);
+                        mapGenerated.Add(new structGen(_countOther, obj));
+                        break;
+                    }
+                }
+            }
+            _countOther += 1;
+        }
+        
+        alreadyGen = randomGenTiles.Length;
+
+        List<structGen> toDelete = new List<structGen>();
+        foreach(structGen obj in mapGenerated)
+        {
+            if(obj.pos < player.position.z / 10 - 10)
+            {
+                toDelete.Add(obj);
+            }
+        }
+
+        foreach(structGen obj in toDelete)
+        {
+            Destroy(obj.obj);
+            mapGenerated.Remove(obj);
+        }
+    }
+
+    public List<Transform> GetIAPath()
+    {
+        List<Transform> toReturn = new List<Transform>();
+        foreach (CliffPath p in cliffPaths)
+        {
+            List<Transform> tr = new List<Transform>();
+            tr = p.GetPath();
+
+            foreach (Transform t in tr)
+            {
+                toReturn.Add(t);
+            }
+        }
+        return toReturn;
     }
 }
