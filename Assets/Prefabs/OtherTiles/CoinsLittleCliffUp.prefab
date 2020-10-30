@@ -54,12 +54,12 @@ PrefabInstance:
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
@@ -129,12 +129,12 @@ PrefabInstance:
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
@@ -204,12 +204,12 @@ PrefabInstance:
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.5
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
@@ -279,12 +279,12 @@ PrefabInstance:
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.5
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 6250569963011232206, guid: 68f8e033742179d48975818101a107d2,
         type: 3}

@@ -40,7 +40,7 @@ public class CollectionCosmetic : MonoBehaviour
     {
         gm = GameMaster.instance;
         PlayerPrefs.SetInt("characters_grey", 1);
-        PlayerPrefs.SetInt("planes_orange", 1);
+        PlayerPrefs.SetInt("planes_grey", 1);
 
         string aPl = PlayerPrefs.GetString("actual_plane");
         if (aPl != "")
@@ -49,8 +49,8 @@ public class CollectionCosmetic : MonoBehaviour
         }
         else
         {
-            gm.player.GetComponent<DeltaCosmetic>().ChangePlane("orange");
-            PlayerPrefs.SetString("actual_plane", "orange");
+            gm.player.GetComponent<DeltaCosmetic>().ChangePlane("grey");
+            PlayerPrefs.SetString("actual_plane", "grey");
         }
 
         string aCh = PlayerPrefs.GetString("actual_character");
@@ -184,6 +184,7 @@ public class CollectionCosmetic : MonoBehaviour
                 RefreshShop();
             }
         }
+        print(name);
     }
     public void CharacterAction(string name)
     {
@@ -205,6 +206,7 @@ public class CollectionCosmetic : MonoBehaviour
                 RefreshShop();
             }
         }
+        print(name);
     }
 
     public void SetPanel(string type)
