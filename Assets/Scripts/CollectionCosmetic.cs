@@ -30,6 +30,12 @@ public class CollectionCosmetic : MonoBehaviour
 
     [Header("Buttons UI")]
     public List<Image> buttons = new List<Image>();
+    public List<GameObject> panels = new List<GameObject>();
+    public List<GameObject> menus = new List<GameObject>();
+
+    public DeltaCosmetic playerShop;
+    public GameObject shopCamera;
+    bool OnShop = false;
 
     private void Awake()
     {
@@ -39,32 +45,44 @@ public class CollectionCosmetic : MonoBehaviour
     private void Start()
     {
         gm = GameMaster.instance;
+        _init_();
+
+        shopCamera.SetActive(OnShop);
+        gm.playerCamera.SetActive(!OnShop);
+
+        RefreshShop();
+    }
+
+    void _init_()
+    {
         PlayerPrefs.SetInt("characters_grey", 1);
-        PlayerPrefs.SetInt("planes_orange", 1);
+        PlayerPrefs.SetInt("planes_grey", 1);
 
         string aPl = PlayerPrefs.GetString("actual_plane");
         if (aPl != "")
         {
             gm.player.GetComponent<DeltaCosmetic>().ChangePlane(aPl);
+            playerShop.ChangePlane(aPl);
         }
         else
         {
-            gm.player.GetComponent<DeltaCosmetic>().ChangePlane("orange");
-            PlayerPrefs.SetString("actual_plane", "orange");
+            gm.player.GetComponent<DeltaCosmetic>().ChangePlane("grey");
+            playerShop.ChangePlane("grey");
+            PlayerPrefs.SetString("actual_plane", "grey");
         }
 
         string aCh = PlayerPrefs.GetString("actual_character");
         if (aCh != "")
         {
             gm.player.GetComponent<DeltaCosmetic>().ChangeCharacter(aCh);
+            playerShop.ChangeCharacter(aCh);
         }
         else
         {
             gm.player.GetComponent<DeltaCosmetic>().ChangeCharacter("grey");
+            playerShop.ChangeCharacter("grey");
             PlayerPrefs.SetString("actual_character", "grey");
         }
-
-        RefreshShop();
     }
     
     void RefreshShop()
@@ -169,6 +187,7 @@ public class CollectionCosmetic : MonoBehaviour
         if (PlayerPrefs.GetInt("planes_" + name) > 0)
         {
             gm.player.GetComponent<DeltaCosmetic>().ChangePlane(name);
+            playerShop.ChangePlane(name);
             PlayerPrefs.SetString("actual_plane", name);
             PlayerPrefs.Save();
         }
@@ -180,16 +199,20 @@ public class CollectionCosmetic : MonoBehaviour
                 PlayerPrefs.SetInt("planes_" + name, 1);
                 PlayerPrefs.SetString("actual_plane", name);
                 gm.player.GetComponent<DeltaCosmetic>().ChangePlane(name);
+                playerShop.ChangePlane(name);
                 PlayerPrefs.Save();
                 RefreshShop();
             }
         }
+        print(name);
     }
+
     public void CharacterAction(string name)
     {
         if (PlayerPrefs.GetInt("characters_" + name) > 0)
         {
             gm.player.GetComponent<DeltaCosmetic>().ChangeCharacter(name);
+            playerShop.ChangeCharacter(name);
             PlayerPrefs.SetString("actual_character", name);
             PlayerPrefs.Save();
         }
@@ -200,6 +223,7 @@ public class CollectionCosmetic : MonoBehaviour
             {
                 PlayerPrefs.SetInt("characters_" + name, 1);
                 gm.player.GetComponent<DeltaCosmetic>().ChangeCharacter(name);
+                playerShop.ChangeCharacter(name);
                 PlayerPrefs.SetString("actual_character", name);
                 PlayerPrefs.Save();
                 RefreshShop();
@@ -213,11 +237,34 @@ public class CollectionCosmetic : MonoBehaviour
         {
             buttons[0].color = new Color(0.4f, 0.4f, 0.4f);
             buttons[1].color = new Color(1, 1, 1);
+            panels[0].SetActive(true);
+            panels[1].SetActive(false);
         }
         else
         {
             buttons[0].color = new Color(1, 1, 1);
             buttons[1].color = new Color(0.4f, 0.4f, 0.4f);
+            panels[0].SetActive(false);
+            panels[1].SetActive(true);
         }
+    }
+
+    public void Open()
+    {
+        if (OnShop)
+        {
+            menus[0].SetActive(true);
+            menus[1].SetActive(false);
+            OnShop = false;
+        }
+        else
+        {
+            menus[0].SetActive(false);
+            menus[1].SetActive(true);
+            SetPanel("plane");
+            OnShop = true;
+        }
+        shopCamera.SetActive(OnShop);
+        gm.playerCamera.SetActive(!OnShop);
     }
 }

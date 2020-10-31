@@ -9,6 +9,7 @@ public class GameMaster : MonoBehaviour
     public static GameMaster instance;
     public Transform playerSpawn;
     public GameObject player;
+    public GameObject playerCamera;
     public bool win = false;
     public bool loose = false;
     public int coins;
