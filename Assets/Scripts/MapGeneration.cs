@@ -114,42 +114,8 @@ public class MapGeneration : MonoBehaviour
         GenLevel();
     }
 
-    public void RestartGen()
-    {
-        currentLevel = gm.GetLevel();
-        int _currentLevel = 0;
-        if (levels.Count - 1 < currentLevel)
-        {
-            _currentLevel = levels.Count - 1;
-        }
-        else
-        {
-            _currentLevel = currentLevel;
-        }
-
-        foreach (Transform child in otherContent.transform)
-        {
-            Destroy(child.gameObject);
-        }
-        int _countOther = 0;
-        foreach (char c in levels[_currentLevel].otherTiles)
-        {
-            if (c != '.')
-            {
-                foreach (TilePrefab tile in tilesOther)
-                {
-                    if (tile.name == c)
-                    {
-                        GameObject obj = Instantiate(tile.prefab, otherContent.transform);
-                        obj.transform.position = new Vector3(0, 0, _countOther * 10);
-                        break;
-                    }
-                }
-            }
-            _countOther += 1;
-        }
-    }
-
+    /* Gen level by string level
+     */
     public void GenLevel()
     {
         currentLevel = gm.GetLevel();
@@ -173,6 +139,7 @@ public class MapGeneration : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        /****      MAP         ****/
         int _count = 0;
         foreach (char c in levels[_currentLevel].wallTiles)
         {
@@ -199,6 +166,7 @@ public class MapGeneration : MonoBehaviour
             }
             _count += 1;
         }
+        /****      OTHER TILES         ****/
         int _countOther = 0;
         foreach (char c in levels[_currentLevel].otherTiles)
         {
@@ -219,6 +187,8 @@ public class MapGeneration : MonoBehaviour
         levelText.text = _currentLevel.ToString();
     }
     
+    /* Reset of the map and set of the infinite start map
+     */
     public void GenRandomLevel()
     {
         foreach (Transform child in tilesContent.transform)
@@ -236,17 +206,15 @@ public class MapGeneration : MonoBehaviour
         ContinueGenLevel();
     }
 
+    /* Gen map by random int who pick a string prefab in a list
+     */
     void ContinueGenLevel()
     {
         while (player.position.z / 10 > randomGenTiles.Length - 14)
         {
-            if(randomPref.Count == 0)
-            {
-                break;
-            }
-            int test = Random.Range(0, randomPref.Count);
-            randomGenTiles += randomPref[test].wallTiles;
-            randomGenOther += randomPref[test].otherTiles;
+            int rdm = Random.Range(0, randomPref.Count);
+            randomGenTiles += randomPref[rdm].wallTiles;
+            randomGenOther += randomPref[rdm].otherTiles;
         }
         int _count = 0;
         foreach (char c in randomGenTiles)

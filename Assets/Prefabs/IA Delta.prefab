@@ -153,7 +153,7 @@ MonoBehaviour:
   dive_Max: 65
   flyup_TransfMult: 150
   flyup_Max: 65
-  maxHeight: 20
+  maxHeight: 22
   minHeight: 0
   initialLives: 2
   lives: 0
@@ -380,6 +380,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5836043300558027909}
     m_Modifications:
+    - target: {fileID: 6215545185001656678, guid: b92251cec53c12a4ca98e619f908cbaf,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 6215545185001656672, guid: b92251cec53c12a4ca98e619f908cbaf,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -434,16 +439,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6215545185001656678, guid: b92251cec53c12a4ca98e619f908cbaf,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 6215545185001656679, guid: b92251cec53c12a4ca98e619f908cbaf,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6215545185358827595, guid: b92251cec53c12a4ca98e619f908cbaf,
         type: 3}
@@ -529,6 +524,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6215545185001656679, guid: b92251cec53c12a4ca98e619f908cbaf,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b92251cec53c12a4ca98e619f908cbaf, type: 3}

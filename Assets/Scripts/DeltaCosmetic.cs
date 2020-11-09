@@ -20,6 +20,8 @@ public class DeltaCosmetic : MonoBehaviour
         ChangeCharacter(characterName);
     }
 
+    /* Change cosmetic of the actual plane prefab
+     */
     public void ChangePlane(string name)
     {
         GameObject nPlane = CollectionCosmetic.instance.GetPlane(name);
@@ -31,6 +33,8 @@ public class DeltaCosmetic : MonoBehaviour
             plane = newPlane;
         }
     }
+    /* Change cosmetic of the actual character prefab
+     */
     public void ChangeCharacter(string name)
     {
         GameObject nCharacter = CollectionCosmetic.instance.GetCharacter(name);

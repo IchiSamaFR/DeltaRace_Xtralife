@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class GameMaster : MonoBehaviour
@@ -50,6 +49,10 @@ public class GameMaster : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        /*
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.SetInt("coins", 10000);
+        */
     }
 
     private void Start()
@@ -62,11 +65,8 @@ public class GameMaster : MonoBehaviour
         GoToMainMenu();
     }
 
-    private void Update()
-    {
-        IsOverUI();
-    }
-
+    /* Launch the game
+     */
     public void StartGame()
     {
         started = true;
@@ -75,6 +75,8 @@ public class GameMaster : MonoBehaviour
         startMenu.SetActive(false);
     }
 
+    /* Show loosed menu
+     */
     public void PlayerDeath()
     {
         loose = true;
@@ -102,6 +104,8 @@ public class GameMaster : MonoBehaviour
         }
     }
 
+    /* Close all panel except menu
+     */
     public void GoToMainMenu()
     {
         loosePanel.SetActive(false);
@@ -119,6 +123,8 @@ public class GameMaster : MonoBehaviour
         SetMode();
     }
 
+    /* Change level value
+     */
     public void NextLevel()
     {
         if (mg.levels.Count - 1 > level)
@@ -129,6 +135,8 @@ public class GameMaster : MonoBehaviour
         }
     }
 
+    /* Show panel of win
+     */
     public void Win()
     {
         win = true;
@@ -138,6 +146,8 @@ public class GameMaster : MonoBehaviour
         NextLevel();
     }
 
+    /* Return actual level
+     */
     public int GetLevel()
     {
         return PlayerPrefs.GetInt("level");
@@ -192,11 +202,11 @@ public class GameMaster : MonoBehaviour
     }
 
     /* Check if mouse is over ui or not
-     * 
-     * Usefull to Start the game
+     * Used to Start the game
      */
     public bool IsOverUI()
     {
+
         float _mouseX = Input.mousePosition.x;
         float _mouseY = Input.mousePosition.y;
         
@@ -221,6 +231,8 @@ public class GameMaster : MonoBehaviour
         return false;
     }
 
+    /* Spawn AI if it's a normal level and set of panels
+     */
     void SetMode()
     {
         Destroy(enemy);
@@ -242,6 +254,8 @@ public class GameMaster : MonoBehaviour
         }
     }
 
+    /* Change the mode and saved it
+     */
     public void ChangeMode(string mode)
     {
         if(mode == "infinite")

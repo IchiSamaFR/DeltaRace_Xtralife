@@ -19,14 +19,17 @@ public class IADelta : DeltaMovements
         _init_();
         StartCoroutine("wait");
     }
-
+    /* Wait to get the path
+     */
     public IEnumerator wait()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.1f);
         
         path = mg.GetIAPath();
     }
 
+    /* AI follow paths of the level
+     */
     private void Update()
     {
         if (!gm.started || isDead || indexPath >= path.Count)
@@ -52,6 +55,8 @@ public class IADelta : DeltaMovements
         }
     }
 
+    /* On trigger basic function, get dmg or death
+     */
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Wall"))

@@ -84,7 +84,9 @@ public class CollectionCosmetic : MonoBehaviour
             PlayerPrefs.SetString("actual_character", "grey");
         }
     }
-    
+
+    /* Refresh shop buttons
+     */
     void RefreshShop()
     {
         foreach (plane p in planes)
@@ -122,6 +124,8 @@ public class CollectionCosmetic : MonoBehaviour
         }
     }
 
+    /* Return Plane prefab
+     */
     public GameObject GetPlane(string name)
     {
         if(name == "random")
@@ -139,6 +143,8 @@ public class CollectionCosmetic : MonoBehaviour
         }
         return planes[0].pref;
     }
+    /* Return price of the plane
+     */
     public int GetPlanePrice(string name)
     {
         foreach (plane p in planes)
@@ -150,7 +156,8 @@ public class CollectionCosmetic : MonoBehaviour
         }
         return -1;
     }
-
+    /* Return Character prefab
+     */
     public GameObject GetCharacter(string name)
     {
         if (name == "random")
@@ -168,6 +175,8 @@ public class CollectionCosmetic : MonoBehaviour
         }
         return characters[0].pref;
     }
+    /* Return price of the character
+     */
     public int GetCharacterPrice(string name)
     {
         foreach (character c in characters)
@@ -182,6 +191,8 @@ public class CollectionCosmetic : MonoBehaviour
 
 
 
+    /* Action with a plane skin, select or buy
+     */
     public void PlanesAction(string name)
     {
         if (PlayerPrefs.GetInt("planes_" + name) > 0)
@@ -204,9 +215,10 @@ public class CollectionCosmetic : MonoBehaviour
                 RefreshShop();
             }
         }
-        print(name);
     }
 
+    /* Action with a character skin, select or buy
+     */
     public void CharacterAction(string name)
     {
         if (PlayerPrefs.GetInt("characters_" + name) > 0)
@@ -230,7 +242,8 @@ public class CollectionCosmetic : MonoBehaviour
             }
         }
     }
-
+    /* Switch between Planes and Character panel
+     */
     public void SetPanel(string type)
     {
         if(type == "plane")
@@ -249,6 +262,8 @@ public class CollectionCosmetic : MonoBehaviour
         }
     }
 
+    /* Open shop panel
+     */
     public void Open()
     {
         if (OnShop)

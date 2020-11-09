@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!28 &-6392947657803259711
+--- !u!28 &-6704606685527250745
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -72,7 +72,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: -6392947657803259711}
+        m_Texture: {fileID: -6704606685527250745}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -158,7 +158,8 @@ MonoBehaviour:
   materialHashCode: -1946709933
   m_Version: 1.1.0
   m_SourceFontFileGUID: 4f1b4126896813a4f80d5b8bb4d0ccdc
-  m_SourceFontFile_EditorRef: {fileID: 0}
+  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 4f1b4126896813a4f80d5b8bb4d0ccdc,
+    type: 3}
   m_SourceFontFile: {fileID: 0}
   m_AtlasPopulationMode: 0
   m_FaceInfo:
@@ -1894,7 +1895,7 @@ MonoBehaviour:
     m_GlyphIndex: 93
     m_Scale: 1
   m_AtlasTextures:
-  - {fileID: -6392947657803259711}
+  - {fileID: -6704606685527250745}
   m_AtlasTextureIndex: 0
   m_UsedGlyphRects:
   - m_X: 0
@@ -2556,9 +2557,9 @@ MonoBehaviour:
     packingMode: 0
     atlasWidth: 512
     atlasHeight: 512
-    characterSetSelectionMode: 0
-    characterSequence: 32 - 126, 160, 8203, 8230, 9633
-    referencedFontAssetGUID: 
+    characterSetSelectionMode: 6
+    characterSequence: 20-7E
+    referencedFontAssetGUID: 302ee6762f386ab48bfd5f99ad10c26b
     referencedTextAssetGUID: 
     fontStyle: 0
     fontStyleModifier: 0
