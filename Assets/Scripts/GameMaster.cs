@@ -51,8 +51,9 @@ public class GameMaster : MonoBehaviour
         instance = this;
         /*
         PlayerPrefs.DeleteAll();
-        PlayerPrefs.SetInt("coins", 10000);
+        PlayerPrefs.SetInt("level", 0);
         */
+        PlayerPrefs.SetInt("level", 0);
     }
 
     private void Start()
@@ -158,12 +159,14 @@ public class GameMaster : MonoBehaviour
      */
     public void GetCoin(int amount = 1)
     {
+        //player.GetComponent<PlayerMovements>().GetCoins();
         coins += amount;
         raceCoinGet += amount;
         coinsTextField.text = coins.ToString();
 
         PlayerPrefs.SetInt("coins", coins);
         PlayerPrefs.Save();
+
     }
 
     /* Add coin by looking an ad

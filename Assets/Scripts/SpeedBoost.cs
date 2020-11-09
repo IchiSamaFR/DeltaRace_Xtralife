@@ -10,6 +10,24 @@ public class SpeedBoost : MonoBehaviour
     public GameObject FX;
     public GameObject cliff;
 
+    bool needDestroy = false;
+
+    public GameObject model;
+    AudioSource src;
+
+    private void Start()
+    {
+        src = GetComponent<AudioSource>();
+    }
+
+    private void Update()
+    {
+        if (destroy && needDestroy && ((src && !src.isPlaying) || !src))
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -32,11 +50,22 @@ public class SpeedBoost : MonoBehaviour
                 {
                     GameObject _fx = Instantiate(FX, GameMaster.instance.canvas.transform);
                     Destroy(_fx, 2);
+
+                    needDestroy = true;
+
+                    if (SoundsManager.active && src)
+                    {
+                        src.Play();
+                    }
                 }
             }
-            if (destroy)
+            if (destroy && !src)
             {
                 Destroy(this.gameObject);
+            }
+            else if (model)
+            {
+                Destroy(model);
             }
         }
     }

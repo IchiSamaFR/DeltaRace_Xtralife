@@ -12,14 +12,16 @@ public class PlayerMovements : DeltaMovements
     public float timeBefGame = 1;
     public bool canPlay = false;
 
-    AudioSource audioSource;
+    [Header("Sounds")]
+    public AudioSource windAudio;
+    public AudioSource coinsAudio;
 
 
     void Start()
     {
+        CheckAudio();
         _init_();
         gm = GameMaster.instance;
-        audioSource = GetComponent<AudioSource>();
         speedParticles.SetActive(false);
     }
 
@@ -108,6 +110,11 @@ public class PlayerMovements : DeltaMovements
     float volumeBase = 0.35f;
     public void CheckAudio()
     {
+        if (!SoundsManager.active)
+        {
+            windAudio.volume = 0;
+            return;
+        }
         Vector3 _rotation = transform.rotation.eulerAngles;
         if (_rotation.x > 0 && _rotation.x < 180)
         {
@@ -116,19 +123,24 @@ public class PlayerMovements : DeltaMovements
             {
                 vol = 1;
             }
-            audioSource.volume = vol;
+            windAudio.volume = vol;
         }
         else
         {
-            if(audioSource.volume > volumeBase)
+            if(windAudio.volume > volumeBase)
             {
-                audioSource.volume = Mathf.Lerp(audioSource.volume, volumeBase, Time.deltaTime);
+                windAudio.volume = Mathf.Lerp(windAudio.volume, volumeBase, Time.deltaTime);
             }
             else
             {
-                audioSource.volume = volumeBase;
+                windAudio.volume = volumeBase;
             }
         }
+    }
+
+    public void GetCoins()
+    {
+        coinsAudio.Play();
     }
 
     private void OnTriggerEnter(Collider other)

@@ -156,6 +156,11 @@ public class DeltaMovements : MonoBehaviour
      */
     public void GetDmg(GameObject cliff, int _dmg = 1, string type = "")
     {
+        if (SoundsManager.active && GetComponent<AudioSource>())
+        {
+            GetComponent<AudioSource>().Play();
+        }
+
         if (!canTakeDmg && type != "instantDeath" || lastHitted == cliff)
         {
             return;
