@@ -14,10 +14,16 @@ public class DeltaMovements : MonoBehaviour
     public float flyup_SpeedMult = 0.1f;
 
     [Header("Transform stats")]
+    public float timeToDive = 1;
+    float timerDive = 0;
     public float dive_TransfMult = 1f;
     public float dive_Max = 45;
+    public float timeToFylup = 1;
+    float timerFlyup = 0;
     public float flyup_TransfMult = 1f;
     public float flyup_Max = 45;
+
+    public float minTimer = 0.5f;
 
 
     [Header("Stats")]
@@ -47,6 +53,9 @@ public class DeltaMovements : MonoBehaviour
         actualSpeed = initialSpeed;
         anim = GetComponent<Animator>();
         anim.SetBool("isDead", false);
+
+        timerDive = minTimer;
+        timerFlyup = minTimer;
     }
 
     /* Dive when hold
@@ -85,7 +94,26 @@ public class DeltaMovements : MonoBehaviour
         }
         else
         {
-            transform.rotation = Quaternion.Euler(_rotation.x + _multiplier * Time.deltaTime, _rotation.y, _rotation.z);
+            transform.rotation = Quaternion.Euler(_rotation.x + (_multiplier * Time.deltaTime) * (timerDive / timeToDive), _rotation.y, _rotation.z);
+        }
+
+
+        if (timerFlyup > minTimer)
+        {
+            timerFlyup -= Time.deltaTime / timeToFylup;
+        }
+        else
+        {
+            timerFlyup = minTimer;
+        }
+
+        if (timerDive < 1)
+        {
+            timerDive += Time.deltaTime / timeToDive;
+        }
+        else
+        {
+            timerDive = 1;
         }
     }
 
@@ -125,7 +153,25 @@ public class DeltaMovements : MonoBehaviour
         }
         else
         {
-            transform.rotation = Quaternion.Euler(_rotation.x - _multiplier * Time.deltaTime, _rotation.y, _rotation.z);
+            transform.rotation = Quaternion.Euler(_rotation.x - (_multiplier * Time.deltaTime) * (timerFlyup / timeToFylup), _rotation.y, _rotation.z);
+        }
+
+        if(timerDive > minTimer)
+        {
+            timerDive -= Time.deltaTime / timeToDive;
+        }
+        else
+        {
+            timerDive = minTimer;
+        }
+
+        if (timerFlyup < 1)
+        {
+            timerFlyup += Time.deltaTime / timeToFylup;
+        }
+        else
+        {
+            timerFlyup = 1;
         }
     }
 

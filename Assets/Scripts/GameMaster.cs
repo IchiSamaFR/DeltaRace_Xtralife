@@ -49,11 +49,14 @@ public class GameMaster : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        /*
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.SetInt("level", 0);
-        */
-        PlayerPrefs.SetInt("level", 0);
+        if (Application.isEditor)
+        {
+            /*
+            PlayerPrefs.DeleteAll();
+            PlayerPrefs.SetInt("level", 0);
+            */
+            //PlayerPrefs.SetInt("level", 0);
+        }
     }
 
     private void Start()

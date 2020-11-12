@@ -39,11 +39,11 @@ public class IADelta : DeltaMovements
         Move();
         if (indexPath < path.Count)
         {
-            if (transform.position.y + 0.2f > path[indexPath].position.y)
+            if (transform.position.y + 0.4f > path[indexPath].position.y)
             {
                 Dive();
             }
-            else if(transform.position.y - 0.2f < path[indexPath].position.y)
+            else if(transform.position.y - 0.4f < path[indexPath].position.y)
             {
                 FlyUp();
             }

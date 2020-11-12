@@ -14,7 +14,7 @@ public class SoundsManager : MonoBehaviour
     {
         int var = PlayerPrefs.GetInt("sounds_active");
 
-        if(var == 1)
+        if(var == 0)
         {
             active = true;
         }
@@ -33,11 +33,11 @@ public class SoundsManager : MonoBehaviour
 
         if (val)
         {
-            PlayerPrefs.SetInt("sounds_active", 1);
+            PlayerPrefs.SetInt("sounds_active", 0);
         }
         else
         {
-            PlayerPrefs.SetInt("sounds_active", 0);
+            PlayerPrefs.SetInt("sounds_active", 1);
         }
 
         Refresh();
