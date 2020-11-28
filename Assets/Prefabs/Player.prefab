@@ -413,7 +413,7 @@ MonoBehaviour:
   timeToFylup: 1
   flyup_TransfMult: 160
   flyup_Max: 65
-  minTimer: 0.6
+  minTimer: 0.2
   maxHeight: 22
   minHeight: 0
   initialLives: 2

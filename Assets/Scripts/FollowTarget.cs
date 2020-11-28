@@ -8,6 +8,8 @@ public class FollowTarget : MonoBehaviour
     public bool yInd;
     public bool zInd;
 
+    public bool byInt = true;
+
     public Transform target;
 
     public Vector3 distanceWithTarget = new Vector3();
@@ -21,29 +23,61 @@ public class FollowTarget : MonoBehaviour
     void Update()
     {
         Vector3 _toGo = new Vector3();
-        if (xInd)
+        if (!byInt)
         {
-            _toGo.x = target.transform.position.x + distanceWithTarget.x;
+            if (xInd)
+            {
+                _toGo.x = target.transform.position.x + distanceWithTarget.x;
+            }
+            else
+            {
+                _toGo.x = transform.position.x;
+            }
+            if (yInd)
+            {
+                _toGo.y = target.transform.position.y + distanceWithTarget.y;
+            }
+            else
+            {
+                _toGo.y = transform.position.y;
+            }
+            if (zInd)
+            {
+                _toGo.z = target.transform.position.z + distanceWithTarget.z;
+            }
+            else
+            {
+                _toGo.z = transform.position.z;
+            }
         }
         else
         {
-            _toGo.x = transform.position.x;
-        }
-        if (yInd)
-        {
-            _toGo.y = target.transform.position.y + distanceWithTarget.y;
-        }
-        else
-        {
-            _toGo.y = transform.position.y;
-        }
-        if (zInd)
-        {
-            _toGo.z = target.transform.position.z + distanceWithTarget.z;
-        }
-        else
-        {
-            _toGo.z = transform.position.z;
+
+            Vector3 _distance = transform.position - target.position;
+            if (xInd && _distance.x > 1)
+            {
+                _toGo.x = target.transform.position.x + 1;
+            }
+            else
+            {
+                _toGo.x = transform.position.x;
+            }
+            if (yInd && _distance.y > 1)
+            {
+                _toGo.y = target.transform.position.y;
+            }
+            else
+            {
+                _toGo.y = transform.position.y;
+            }
+            if (zInd && _distance.z > 1)
+            {
+                _toGo.z = target.transform.position.z + 1;
+            }
+            else
+            {
+                _toGo.z = transform.position.z;
+            }
         }
         
         this.transform.position = _toGo;
