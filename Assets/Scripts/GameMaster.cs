@@ -54,8 +54,8 @@ public class GameMaster : MonoBehaviour
             /*
             PlayerPrefs.DeleteAll();
             PlayerPrefs.SetInt("level", 0);
+            PlayerPrefs.SetInt("level", 10);
             */
-            //PlayerPrefs.SetInt("level", 0);
         }
     }
 

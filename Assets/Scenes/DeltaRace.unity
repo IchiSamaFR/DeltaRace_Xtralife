@@ -1482,6 +1482,7 @@ GameObject:
   m_Component:
   - component: {fileID: 158474464}
   - component: {fileID: 158474463}
+  - component: {fileID: 158474462}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -1489,6 +1490,14 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!81 &158474462
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158474461}
+  m_Enabled: 1
 --- !u!20 &158474463
 Camera:
   m_ObjectHideFlags: 0
@@ -1703,36 +1712,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levels:
-  - name: 1 - Test Simple Cliff
+  - name: 0 - Test Simple Cliff
     wallTiles: S.._.._.._..E
     otherTiles: ..ud.u
-  - name: 2 - Simple Cliff + Big
+  - name: 1 - Simple Cliff + Big
     wallTiles: S.._..b.._..E
     otherTiles: ..u..U...c
-  - name: 3 - Big Little Big
+  - name: 2 - Big Little Big
     wallTiles: S..b.._..b..E
     otherTiles: ..U..us
-  - name: 4 - Plateform start
+  - name: 3 - Plateform start
     wallTiles: S..b..-.._.-.E
     otherTiles: ..U...S.u
-  - name: 5 - Entrance
+  - name: 4 - Entrance
     wallTiles: S.._..-.._..b...e..._.b..-.._..E
     otherTiles: ..ud..b..c.U....s...c....C.uc
-  - name: 6
+  - name: 5
     wallTiles: S.._..m.._..m.._.b..e..-.._..E
     otherTiles: '...c..s.ud..c...s...s....uc.'
-  - name: 7
+  - name: 6
     wallTiles: S.._..U.._..b.._..-.._..-..b..E
     otherTiles: '...s..c..c.US..c..b..s..B..C..'
-  - name: 8
+  - name: 7
     wallTiles: S..b..m..-.._..-..b..U...-..b..E
     otherTiles: ..US..c..b..c..B..S..c...C.U...
-  - name: 9
+  - name: 8
     wallTiles: S..b..e.._..-..b..U..b.._..-..b..E
     otherTiles: ..UC..s..c..b..C.sc.U...c..B.UC
-  - name: 10
-    wallTiles: S.._..m..-..m..-.._.-..b..U.._..-..E...b.._..E
-    otherTiles: 
+  - name: 9
+    wallTiles: S.._.b._.b..e..b..e.._..-..e..b..E
+    otherTiles: '...c.C.c.S..c.UC..s..c..b.csc.C.c'
+  - name: 10 - boss
+    wallTiles: S.._..m..b..-..m..-._.-..b..U.._.-..e..b.._..E
+    otherTiles: '...c.cscUC..B..sc.b.c.B.US.csc.s.B..csUC.csc.'
   tiles:
   - tileName: S - START CLIFF -
     name: 83
@@ -8794,7 +8806,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1228440466}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -8853,8 +8865,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1228440466}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 300}
-  m_LocalScale: {x: 1800, y: 1, z: 800}
+  m_LocalPosition: {x: -410, y: -0.5, z: 300}
+  m_LocalScale: {x: 900, y: 1, z: 800}
   m_Children: []
   m_Father: {fileID: 629946586}
   m_RootOrder: 0
