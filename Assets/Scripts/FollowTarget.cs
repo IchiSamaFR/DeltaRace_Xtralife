@@ -12,17 +12,19 @@ public class FollowTarget : MonoBehaviour
 
     public Transform target;
 
+    Vector3 before = new Vector3();
     public Vector3 distanceWithTarget = new Vector3();
     
     void Start()
     {
         distanceWithTarget = transform.position - target.position;
+        before = target.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 _toGo = new Vector3();
+        Vector3 _toGo = transform.position;
         if (!byInt)
         {
             if (xInd)
@@ -33,6 +35,7 @@ public class FollowTarget : MonoBehaviour
             {
                 _toGo.x = transform.position.x;
             }
+
             if (yInd)
             {
                 _toGo.y = target.transform.position.y + distanceWithTarget.y;
@@ -41,6 +44,7 @@ public class FollowTarget : MonoBehaviour
             {
                 _toGo.y = transform.position.y;
             }
+
             if (zInd)
             {
                 _toGo.z = target.transform.position.z + distanceWithTarget.z;
@@ -52,31 +56,38 @@ public class FollowTarget : MonoBehaviour
         }
         else
         {
+            Vector3 _actual = target.transform.position;
+            if (xInd && before.x - 10 > _actual.x)
+            {
+                _toGo.x -= 10;
+                before.x -= 10;
+            }
+            else if(xInd && before.x + 10 < _actual.x)
+            {
+                _toGo.x += 10;
+                before.x += 10;
+            }
 
-            Vector3 _distance = transform.position - target.position;
-            if (xInd && _distance.x > 1)
+            if (yInd && before.y - 10 > _actual.y)
             {
-                _toGo.x = target.transform.position.x + 1;
+                _toGo.y -= 10;
+                before.y -= 10;
             }
-            else
+            else if (yInd && before.y + 10 < _actual.y)
             {
-                _toGo.x = transform.position.x;
+                _toGo.y += 10;
+                before.y += 10;
             }
-            if (yInd && _distance.y > 1)
+
+            if (zInd && before.z - 10 > _actual.z)
             {
-                _toGo.y = target.transform.position.y;
+                _toGo.z -= 10;
+                before.z -= 10;
             }
-            else
+            else if (zInd && before.z + 10 < _actual.z)
             {
-                _toGo.y = transform.position.y;
-            }
-            if (zInd && _distance.z > 1)
-            {
-                _toGo.z = target.transform.position.z + 1;
-            }
-            else
-            {
-                _toGo.z = transform.position.z;
+                _toGo.z += 10;
+                before.z += 10;
             }
         }
         
