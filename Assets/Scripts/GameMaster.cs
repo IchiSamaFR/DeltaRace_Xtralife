@@ -51,6 +51,7 @@ public class GameMaster : MonoBehaviour
         instance = this;
         if (Application.isEditor)
         {
+            PlayerPrefs.SetInt("level", 0);
             /*
             PlayerPrefs.DeleteAll();
             PlayerPrefs.SetInt("level", 0);
