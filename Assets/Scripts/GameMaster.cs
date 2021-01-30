@@ -88,15 +88,19 @@ public class GameMaster : MonoBehaviour
         loosePanel.SetActive(true);
         nextPanel.SetActive(false);
         txtCoinsGet.text = "+ " + raceCoinGet.ToString();
-        PlayerPrefs.SetInt("coins", coins);
-        PlayerPrefs.Save();
+        SaveCoins();
 
         if (infinite)
         {
-            if((int)player.transform.position.z > PlayerPrefs.GetInt("bestRace"))
+            int scoreValue = (int)player.transform.position.z;
+
+            TrophyManager.instance.VerifyAchievement("distance", scoreValue * 100);
+            LeaderBoardManager.instance.PostScore(scoreValue);
+
+            if (scoreValue > PlayerPrefs.GetInt("bestRace"))
             {
-                PlayerPrefs.SetInt("bestRace", (int)player.transform.position.z);
-                txtEndInfos.text = "New best score : " + ((int)player.transform.position.z).ToString();
+                PlayerPrefs.SetInt("bestRace", scoreValue);
+                txtEndInfos.text = "New best score : " + scoreValue.ToString();
             }
             else
             {
@@ -137,6 +141,7 @@ public class GameMaster : MonoBehaviour
             level += 1;
             PlayerPrefs.SetInt("level", level);
             PlayerPrefs.Save();
+            ConnectionManager.instance.SetUserLevel(level);
         }
     }
 
@@ -165,10 +170,6 @@ public class GameMaster : MonoBehaviour
     {
         coins = amount;
         coinsTextField.text = coins.ToString();
-
-        PlayerPrefs.SetInt("coins", coins);
-        PlayerPrefs.Save();
-
     }
 
 
@@ -180,20 +181,22 @@ public class GameMaster : MonoBehaviour
         coins += amount;
         raceCoinGet += amount;
         coinsTextField.text = coins.ToString();
+    }
 
+    void SaveCoins()
+    {
         PlayerPrefs.SetInt("coins", coins);
         PlayerPrefs.Save();
-
+        ConnectionManager.instance.SetUserCoins(coins);
+        print("Saved Coins");
     }
 
     /* Add coin by looking an ad
      */
     public void GetAdsCoins(int amount)
     {
-        coins += amount;
-        coinsTextField.text = coins.ToString();
-        PlayerPrefs.SetInt("coins", coins);
-        PlayerPrefs.Save();
+        GetCoin(amount);
+        SaveCoins();
         GoToMainMenu();
     }
 
@@ -201,10 +204,8 @@ public class GameMaster : MonoBehaviour
      */
     public void GetDoubleRaceCoins()
     {
-        coins += raceCoinGet;
-        coinsTextField.text = coins.ToString();
-        PlayerPrefs.SetInt("coins", coins);
-        PlayerPrefs.Save();
+        GetCoin(raceCoinGet);
+        SaveCoins();
         GoToMainMenu();
     }
 
@@ -212,10 +213,7 @@ public class GameMaster : MonoBehaviour
     {
         if(coins >= amount)
         {
-            coins -= amount;
-            coinsTextField.text = coins.ToString();
-            PlayerPrefs.SetInt("coins", coins);
-            PlayerPrefs.Save();
+            GetCoin(-amount);
             return true;
         }
         return false;

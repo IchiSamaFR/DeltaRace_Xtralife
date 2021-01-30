@@ -28,6 +28,19 @@ public static class Tools
     {
         return JsonUtility.FromJson<JsonCoin>(json);
     }
+    public static JsonAchievementConfig GetJsonAchievementConfig(string json)
+    {
+        return JsonUtility.FromJson<JsonAchievementConfig>(json);
+    }
+    public static JsonLevel GetJsonLevel(string json)
+    {
+        return JsonUtility.FromJson<JsonLevel>(json);
+    }
+
+    public static dynamic GetJson(string json)
+    {
+        return JsonUtility.FromJson<dynamic>(json);
+    }
 }
 
 public class JsonError
@@ -46,4 +59,13 @@ public class JsonCharacter
 public class JsonCoin
 {
     public string coins;
+}
+public class JsonAchievementConfig
+{
+    public string unit;
+    public string maxValue;
+}
+public class JsonLevel
+{
+    public string level;
 }

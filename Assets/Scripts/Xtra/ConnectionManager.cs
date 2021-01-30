@@ -45,6 +45,11 @@ public class ConnectionManager : MonoBehaviour
 
     void Awake()
     {
+        if (instance)
+        {
+            Debug.LogError("Connection Manager already defined.");
+            return;
+        }
         instance = this;
     }
 
@@ -167,6 +172,8 @@ public class ConnectionManager : MonoBehaviour
             isSet = true;
         }
         GetProfileData();
+        TrophyManager.instance.SetGamer(Gamer);
+        LeaderBoardManager.instance.SetGamer(Gamer);
     }
 
     void RefreshData()
@@ -205,14 +212,11 @@ public class ConnectionManager : MonoBehaviour
         .Done(result => {
             Gamer = null;
             profileData = new ProfileData();
-            CollectionCosmetic.instance.DeleteAll();
-            GameMaster.instance.SetCoin(0);
 
             loginPanel.SetActive(true);
             loggedPanel.SetActive(false);
 
-            PlayerPrefs.SetString("login_idkey", "");
-            PlayerPrefs.SetString("login_secretkey", "");
+            DeleteData();
 
             LoginAnonymous();
         }, ex => {
@@ -265,40 +269,7 @@ public class ConnectionManager : MonoBehaviour
     #endregion
 
     #region -- User data --
-
-    public async Task<string> GetUserValues(string keyName)
-    {
-        if (!connected) return "";
-
-        await Task.Delay(0);
-        string result = "";
-
-        Gamer.GamerVfs.Domain("private").GetValue(keyName)
-        .Done(getUserValueRes => {
-            result = getUserValueRes["result"].ToString();
-        }, ex => {
-            CotcException error = (CotcException)ex;
-            if (GetJsonError(error.ServerData.ToString()).name == "KeyNotFound")
-            {
-                result = "KeyNotFound";
-            }
-        });
-
-        return result;
-    }
-    public void SetUserValues(string keyName, string keyValue)
-    {
-        if (!connected) return;
-
-        Bundle value = new Bundle(keyValue);
-        Gamer.GamerVfs.Domain("private").SetValue(keyName, value)
-        .Done(setUserValueRes => {
-            //  Done
-        }, ex => {
-            CotcException error = (CotcException)ex;
-        });
-    }
-
+    
     void DeleteUserValue(string keyName)
     {
         if (!connected) return;
@@ -318,7 +289,14 @@ public class ConnectionManager : MonoBehaviour
         Gamer.GamerVfs.Domain("private").GetValue("deltaplanes")
         .Done(getUserValueRes => {
             string result = getUserValueRes["result"].ToString();
-            CollectionCosmetic.instance.SetPlanes(GetJsonPlane(result).deltaplanes);
+            if(GetJsonPlane(result).deltaplanes == "")
+            {
+                SetUserPlanes();
+            }
+            else
+            {
+                CollectionCosmetic.instance.SetPlanes(GetJsonPlane(result).deltaplanes);
+            }
         }, ex => {
             CotcException error = (CotcException)ex;
             if (GetJsonError(error.ServerData.ToString()).name == "KeyNotFound")
@@ -332,7 +310,14 @@ public class ConnectionManager : MonoBehaviour
         Gamer.GamerVfs.Domain("private").GetValue("characters")
         .Done(getUserValueRes => {
             string result = getUserValueRes["result"].ToString();
-            CollectionCosmetic.instance.SetCharacters(GetJsonCharacters(result).characters);
+            if (GetJsonCharacters(result).characters == "")
+            {
+                SetUserCharacters();
+            }
+            else
+            {
+                CollectionCosmetic.instance.SetCharacters(GetJsonCharacters(result).characters);
+            }
         }, ex => {
             CotcException error = (CotcException)ex;
             if (GetJsonError(error.ServerData.ToString()).name == "KeyNotFound")
@@ -346,7 +331,6 @@ public class ConnectionManager : MonoBehaviour
         Gamer.GamerVfs.Domain("private").GetValue("coins")
         .Done(getUserValueRes => {
             string result = getUserValueRes["result"].ToString();
-
             GameMaster.instance.SetCoin(int.Parse(GetJsonCoin(result).coins));
         }, ex => {
             CotcException error = (CotcException)ex;
@@ -357,7 +341,32 @@ public class ConnectionManager : MonoBehaviour
         });
     }
 
-    void SetUserPlanes(string values = "grey")
+    public void GetUserLevel()
+    {
+        Gamer.GamerVfs.Domain("private").GetValue("level")
+        .Done(getUserValueRes => {
+            string result = getUserValueRes["result"].ToString();
+
+            int levelGet = int.Parse(GetJsonLevel(result).level);
+            if(PlayerPrefs.GetInt("level") > levelGet)
+            {
+                SetUserLevel(PlayerPrefs.GetInt("level"));
+            }
+            else
+            {
+                PlayerPrefs.SetInt("level", levelGet);
+                MapGeneration.instance.GenLevel();
+            }
+        }, ex => {
+            CotcException error = (CotcException)ex;
+            if (GetJsonError(error.ServerData.ToString()).name == "KeyNotFound")
+            {
+                SetUserLevel(0);
+            }
+        });
+    }
+
+    public void SetUserPlanes(string values = "grey")
     {
         Bundle value = new Bundle(values);
         Gamer.GamerVfs.Domain("private").SetValue("deltaplanes", value)
@@ -368,7 +377,7 @@ public class ConnectionManager : MonoBehaviour
             Debug.LogError("Could not set user data due to error: " + error.ErrorCode + " (" + error.ErrorInformation + ")");
         });
     }
-    void SetUserCharacters(string values = "grey")
+    public void SetUserCharacters(string values = "grey")
     {
         Bundle value = new Bundle(values);
         Gamer.GamerVfs.Domain("private").SetValue("characters", value)
@@ -379,7 +388,7 @@ public class ConnectionManager : MonoBehaviour
             Debug.LogError("Could not set user data due to error: " + error.ErrorCode + " (" + error.ErrorInformation + ")");
         });
     }
-    void SetUserCoins(int values = 0)
+    public void SetUserCoins(int values = 0)
     {
         if(values == 0)
         {
@@ -394,6 +403,35 @@ public class ConnectionManager : MonoBehaviour
             CotcException error = (CotcException)ex;
             Debug.LogError("Can't create coins Data.");
         });
+    }
+    public void SetUserLevel(int values = 0)
+    {
+        if (values == 0)
+        {
+            values = PlayerPrefs.GetInt("level");
+        }
+
+        Bundle value = new Bundle(values);
+        Gamer.GamerVfs.Domain("private").SetValue("level", value)
+        .Done(setUserValueRes => {
+            GetUserLevel();
+        }, ex => {
+            CotcException error = (CotcException)ex;
+        });
+    }
+
+    void DeleteData()
+    {
+        CollectionCosmetic.instance.DeleteAll();
+        GameMaster.instance.SetCoin(0);
+
+        PlayerPrefs.SetString("login_idkey", "");
+        PlayerPrefs.SetString("login_secretkey", "");
+
+        PlayerPrefs.SetInt("bestRace", 0);
+        PlayerPrefs.SetInt("level", 0);
+
+        MapGeneration.instance.GenLevel();
     }
     #endregion
 

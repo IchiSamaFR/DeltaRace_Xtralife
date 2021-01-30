@@ -89,7 +89,6 @@ public class CollectionCosmetic : MonoBehaviour
     public void SetPlanes(string planesString)
     {
         string[] planesArray = planesString.Split(',');
-        
         foreach (plane p in planes)
         {
             bool found = false;
@@ -107,7 +106,6 @@ public class CollectionCosmetic : MonoBehaviour
                 PlayerPrefs.SetInt("planes_" + p.name, 0);
             }
         }
-
         RefreshShop();
     }
     public void SetCharacters(string charactersString)
@@ -131,7 +129,6 @@ public class CollectionCosmetic : MonoBehaviour
                 PlayerPrefs.SetInt("characters_" + c.name, 0);
             }
         }
-
         RefreshShop();
     }
 
@@ -188,12 +185,6 @@ public class CollectionCosmetic : MonoBehaviour
                 c.unavailable.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = c.value.ToString();
             }
         }
-
-        if (ConnectionManager.instance.connected)
-        {
-            ConnectionManager.instance.SetUserValues("deltaplanes", planeToSave);
-            ConnectionManager.instance.SetUserValues("characters", charToSave);
-        }
     }
 
     /* Return Plane prefab
@@ -215,6 +206,7 @@ public class CollectionCosmetic : MonoBehaviour
         }
         return planes[0].pref;
     }
+
     /* Return price of the plane
      */
     public int GetPlanePrice(string name)
@@ -228,6 +220,7 @@ public class CollectionCosmetic : MonoBehaviour
         }
         return -1;
     }
+
     /* Return Character prefab
      */
     public GameObject GetCharacter(string name)
@@ -247,6 +240,7 @@ public class CollectionCosmetic : MonoBehaviour
         }
         return characters[0].pref;
     }
+
     /* Return price of the character
      */
     public int GetCharacterPrice(string name)
@@ -284,6 +278,7 @@ public class CollectionCosmetic : MonoBehaviour
                 gm.player.GetComponent<DeltaCosmetic>().ChangePlane(name);
                 playerShop.ChangePlane(name);
                 PlayerPrefs.Save();
+                SavePlanes();
                 RefreshShop();
             }
         }
@@ -310,10 +305,42 @@ public class CollectionCosmetic : MonoBehaviour
                 playerShop.ChangeCharacter(name);
                 PlayerPrefs.SetString("actual_character", name);
                 PlayerPrefs.Save();
+                SaveCharacters();
                 RefreshShop();
             }
         }
     }
+
+
+    void SavePlanes()
+    {
+        string returned = "";
+        foreach (var item in planes)
+        {
+            if (PlayerPrefs.GetInt("planes_" + item.name) > 0)
+            {
+                returned += item.name + ",";
+            }
+        }
+        
+        ConnectionManager.instance.SetUserPlanes(returned);
+    }
+    void SaveCharacters()
+    {
+        string returned = "";
+        foreach (var item in characters)
+        {
+            if (PlayerPrefs.GetInt("characters_" + item.name) > 0)
+            {
+                returned += item.name + ",";
+            }
+        }
+
+        ConnectionManager.instance.SetUserCharacters(returned);
+    }
+
+
+
     /* Switch between Planes and Character panel
      */
     public void SetPanel(string type)
