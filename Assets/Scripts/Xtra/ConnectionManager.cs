@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
 using CotcSdk;
 using UnityEngine.Networking;
+using System.Threading;
+using System.Threading.Tasks;
+
 using static Tools;
 
-public struct ProfileData
+public class ProfileData
 {
     public string displayName;
     public string email;
@@ -15,7 +19,12 @@ public struct ProfileData
 }
 public class ConnectionManager : MonoBehaviour
 {
+    public static ConnectionManager instance;
+
     [Header("UI Objects")]
+    public Button socialConnect;
+    public Button socialTrophy;
+
     public GameObject loginPanel;
     public TMP_InputField mail;
     public TMP_InputField pass;
@@ -24,43 +33,61 @@ public class ConnectionManager : MonoBehaviour
     public TextMeshProUGUI pseudoInf;
     public TextMeshProUGUI mailInf;
 
+    public bool connected;
+
     private Cloud Cloud;
-
     private Gamer Gamer;
-
     private ProfileData profileData;
 
     string mailUsed;
 
-    void Start()
+    bool isSet = false;
+
+    void Awake()
     {
-        Init();
+        instance = this;
     }
 
-    bool triedToResume = false;
-    bool isSet = false;
-    private void Update()
+    void Start()
     {
-        if (!triedToResume)
+        InitConnection();
+    }
+
+    bool isResumed = false;
+    void Update()
+    {
+        if (!isResumed)
         {
             Resume();
         }
+
+        if (!connected)
+        {
+            socialConnect.interactable = false;
+            socialTrophy.interactable = false;
+        }
+        else
+        {
+            socialConnect.interactable = true;
+            socialTrophy.interactable = true;
+        }
     }
 
-    private void Init()
+    void InitConnection()
     {
-        // Link with the CotC Game Object
         var cb = FindObjectOfType<CotcGameObject>();
         if (cb == null)
         {
-            Debug.LogError("Cotc object needed !");
+            Debug.LogError("Place prefab Cotc !");
             return;
         }
 
-        // Initiate getting the main Cloud object
+        // Log unhandled exceptions (.Done block without .Catch -- not called if there is any .Then)
+        Promise.UnhandledException += (object sender, ExceptionEventArgs e) => {
+            Debug.LogError("Unhandled exception: " + e.Exception.ToString());
+        };
         cb.GetCloud().Done(cloud => {
             Cloud = cloud;
-            // Retry failed HTTP requests once
             Cloud.HttpRequestFailedHandler = (HttpRequestFailedEventArgs e) => {
                 if (e.UserData == null)
                 {
@@ -68,136 +95,160 @@ public class ConnectionManager : MonoBehaviour
                     e.RetryIn(1000);
                 }
                 else
+                {
                     e.Abort();
+                }
             };
-            Debug.Log("Setup done");
+            Debug.Log("--- Setup done ---");
+            connected = true;
         });
     }
 
+    
+    /* Resume profile if not connected
+     */
+    public void Resume()
+    {
+        if (!connected) return;
+
+        string idKey = PlayerPrefs.GetString("login_idkey");
+        string secretKey = PlayerPrefs.GetString("login_secretkey");
+        
+        Cloud.ResumeSession(
+            gamerId: PlayerPrefs.GetString("login_idkey"),
+            gamerSecret: PlayerPrefs.GetString("login_secretkey"))
+            .Done(gamer => {
+                Gamer = gamer;
+                DidLogin();
+            }, ex => {
+                LoginAnonymous();
+            });
+        isResumed = true;
+    }
 
     /* If no logs, connect in anonymous
      */
     public void LoginAnonymous()
     {
         if (Gamer != null) return;
-
+        
+       
         Cloud.LoginAnonymously()
             .Done(gamer => {
-                DidLogin(gamer);
+                Gamer = gamer;
+                DidLogin();
             }, ex => {
                 CotcException error = (CotcException)ex;
-                Debug.LogError("Failed to login: " + error.ErrorCode + " (" + error.HttpStatusCode + ")");
             });
     }
 
-    /* Resume profile if not connected
-     */
-    public void Resume()
-    {
-        string idKey = PlayerPrefs.GetString("login_idkey");
-        string secretKey = PlayerPrefs.GetString("login_secretkey");
-        if (idKey != "" && secretKey != "")
-        {
-            Cloud.ResumeSession(
-                gamerId: PlayerPrefs.GetString("login_idkey"),
-                gamerSecret: PlayerPrefs.GetString("login_secretkey"))
-                .Done(gamer => {
-                    DidLogin(gamer);
-                }, ex => {
-                    CotcException error = (CotcException)ex;
-                    //Debug.LogError("Failed to login: " + error.ErrorCode + " (" + error.HttpStatusCode + ")");
-                    LoginAnonymous();
-                });
-            triedToResume = true;
-        }
-        else
-        {
-            Debug.Log("No Accounts");
-        }
-    }
-    
     /* Actions after been logged
      */
-    void DidLogin(Gamer newGamer)
+    void DidLogin(Gamer newGamer = null)
     {
-        if (Gamer != null)
+        if(newGamer != null)
         {
-            Debug.LogWarning("Current gamer " + Gamer.GamerId + " has been dismissed");
+            Gamer = newGamer;
         }
-        Gamer = newGamer;
+
         mail.text = "";
         pass.text = "";
 
-        GetProfileData();
-
-        if (isSet)
+        if (isSet && Gamer.Network == "network")
         {
             LoginNotification();
+        }
+        else if (isSet && Gamer.Network == "anonymous")
+        {
+            LogoutNotification();
         }
         else
         {
             isSet = true;
         }
+        GetProfileData();
     }
 
     void RefreshData()
     {
+
         PlayerPrefs.SetString("login_idkey", Gamer.GamerId);
         PlayerPrefs.SetString("login_secretkey", Gamer.GamerSecret);
-        loginPanel.SetActive(false);
-        loggedPanel.SetActive(true);
-        pseudoInf.text = profileData.displayName;
-        mailInf.text = profileData.email;
-        print(profileData.email);
+        
+        if(profileData.displayName != "Guest" || profileData.email != null)
+        {
+            loginPanel.SetActive(false);
+            loggedPanel.SetActive(true);
+            pseudoInf.text = profileData.displayName;
+            mailInf.text = profileData.email;
+        }
+        else
+        {
+            loginPanel.SetActive(true);
+            loggedPanel.SetActive(false);
+            mail.text = "";
+            pass.text = "";
+        }
+
+        GetUserPlanes();
+        GetUserCharacters();
+        GetUserCoins();
     }
 
     /* Logout Gamer AND delete profile data
      */
     public void Logout()
     {
+        if (Gamer == null) return;
+
         Cloud.Logout(Gamer)
         .Done(result => {
+            Gamer = null;
             profileData = new ProfileData();
+            CollectionCosmetic.instance.DeleteAll();
+            GameMaster.instance.SetCoin(0);
+
             loginPanel.SetActive(true);
             loggedPanel.SetActive(false);
+
+            PlayerPrefs.SetString("login_idkey", "");
+            PlayerPrefs.SetString("login_secretkey", "");
+
+            LoginAnonymous();
         }, ex => {
-            // The exception should always be CotcException
             CotcException error = (CotcException)ex;
-            Debug.LogError("Failed to logout: " + error.ErrorCode + " (" + error.HttpStatusCode + ")");
         });
     }
 
+
+    #region -- Profile Data --
+
     /* Get Gamer Profile Data
      */
-    private void GetProfileData()
+    void GetProfileData()
     {
+        if (!GamerIsCreated()) return;
+
         Gamer.Profile.Get()
         .Done(profileRes => {
             profileData = GetProfileClass(profileRes.ToString());
             if(profileData.email == "")
-            {
                 SetProfileMail(mailUsed);
-            }
             RefreshData();
         }, ex => {
             CotcException error = (CotcException)ex;
-            Debug.LogError("Could not get profile data due to error: " + error.ErrorCode + " (" + error.ErrorInformation + ")");
         });
     }
     
-    private void SetProfileMail(string email)
+    void SetProfileMail(string email)
     {
         Bundle profileUpdates = Bundle.CreateObject();
         profileUpdates["email"] = new Bundle(email);
 
         Gamer.Profile.Set(profileUpdates)
         .Done(profileRes => {
-            GetProfileData();
-            Debug.Log("Profile data set: " + profileRes.ToString());
         }, ex => {
-            // The exception should always be CotcException
             CotcException error = (CotcException)ex;
-            Debug.LogError("Could not set profile data due to error: " + error.ErrorCode + " (" + error.ErrorInformation + ")");
         });
     }
     private void SetProfilePseudo(string pseudo)
@@ -207,14 +258,148 @@ public class ConnectionManager : MonoBehaviour
 
         Gamer.Profile.Set(profileUpdates)
         .Done(profileRes => {
-            Debug.Log("Profile data set: " + profileRes.ToString());
         }, ex => {
-            // The exception should always be CotcException
             CotcException error = (CotcException)ex;
-            Debug.LogError("Could not set profile data due to error: " + error.ErrorCode + " (" + error.ErrorInformation + ")");
+        });
+    }
+    #endregion
+
+    #region -- User data --
+
+    public async Task<string> GetUserValues(string keyName)
+    {
+        if (!connected) return "";
+
+        await Task.Delay(0);
+        string result = "";
+
+        Gamer.GamerVfs.Domain("private").GetValue(keyName)
+        .Done(getUserValueRes => {
+            result = getUserValueRes["result"].ToString();
+        }, ex => {
+            CotcException error = (CotcException)ex;
+            if (GetJsonError(error.ServerData.ToString()).name == "KeyNotFound")
+            {
+                result = "KeyNotFound";
+            }
+        });
+
+        return result;
+    }
+    public void SetUserValues(string keyName, string keyValue)
+    {
+        if (!connected) return;
+
+        Bundle value = new Bundle(keyValue);
+        Gamer.GamerVfs.Domain("private").SetValue(keyName, value)
+        .Done(setUserValueRes => {
+            //  Done
+        }, ex => {
+            CotcException error = (CotcException)ex;
         });
     }
 
+    void DeleteUserValue(string keyName)
+    {
+        if (!connected) return;
+
+        Gamer.GamerVfs.Domain("private").DeleteValue(keyName)
+        .Done(deleteUserValueRes => {
+            //  Done
+        }, ex => {
+            CotcException error = (CotcException)ex;
+
+        });
+    }
+
+
+    public void GetUserPlanes()
+    {
+        Gamer.GamerVfs.Domain("private").GetValue("deltaplanes")
+        .Done(getUserValueRes => {
+            string result = getUserValueRes["result"].ToString();
+            CollectionCosmetic.instance.SetPlanes(GetJsonPlane(result).deltaplanes);
+        }, ex => {
+            CotcException error = (CotcException)ex;
+            if (GetJsonError(error.ServerData.ToString()).name == "KeyNotFound")
+            {
+                SetUserPlanes();
+            }
+        });
+    }
+    public void GetUserCharacters()
+    {
+        Gamer.GamerVfs.Domain("private").GetValue("characters")
+        .Done(getUserValueRes => {
+            string result = getUserValueRes["result"].ToString();
+            CollectionCosmetic.instance.SetCharacters(GetJsonCharacters(result).characters);
+        }, ex => {
+            CotcException error = (CotcException)ex;
+            if (GetJsonError(error.ServerData.ToString()).name == "KeyNotFound")
+            {
+                SetUserCharacters();
+            }
+        });
+    }
+    public void GetUserCoins()
+    {
+        Gamer.GamerVfs.Domain("private").GetValue("coins")
+        .Done(getUserValueRes => {
+            string result = getUserValueRes["result"].ToString();
+
+            GameMaster.instance.SetCoin(int.Parse(GetJsonCoin(result).coins));
+        }, ex => {
+            CotcException error = (CotcException)ex;
+            if (GetJsonError(error.ServerData.ToString()).name == "KeyNotFound")
+            {
+                SetUserCoins(0);
+            }
+        });
+    }
+
+    void SetUserPlanes(string values = "grey")
+    {
+        Bundle value = new Bundle(values);
+        Gamer.GamerVfs.Domain("private").SetValue("deltaplanes", value)
+        .Done(setUserValueRes => {
+            GetUserPlanes();
+        }, ex => {
+            CotcException error = (CotcException)ex;
+            Debug.LogError("Could not set user data due to error: " + error.ErrorCode + " (" + error.ErrorInformation + ")");
+        });
+    }
+    void SetUserCharacters(string values = "grey")
+    {
+        Bundle value = new Bundle(values);
+        Gamer.GamerVfs.Domain("private").SetValue("characters", value)
+        .Done(setUserValueRes => {
+            GetUserCharacters();
+        }, ex => {
+            CotcException error = (CotcException)ex;
+            Debug.LogError("Could not set user data due to error: " + error.ErrorCode + " (" + error.ErrorInformation + ")");
+        });
+    }
+    void SetUserCoins(int values = 0)
+    {
+        if(values == 0)
+        {
+            values = GameMaster.instance.coins;
+        }
+
+        Bundle value = new Bundle(values);
+        Gamer.GamerVfs.Domain("private").SetValue("coins", value)
+        .Done(setUserValueRes => {
+            GetUserCoins();
+        }, ex => {
+            CotcException error = (CotcException)ex;
+            Debug.LogError("Can't create coins Data.");
+        });
+    }
+    #endregion
+
+    #region Xtralife Network
+    /* Try to login to Xtralife
+     */
     public void LoginNetwork()
     {
         Cloud.Login(
@@ -222,48 +407,58 @@ public class ConnectionManager : MonoBehaviour
                 networkId: mail.text,
                 networkSecret: pass.text)
             .Done(gamer => {
-                DidLogin(gamer);
                 mailUsed = mail.text;
+                Gamer = gamer;
+                DidLogin();
             }, ex => {
                 // The exception should always be CotcException
                 CotcException error = (CotcException)ex;
-                Debug.LogError("Failed to login: " + error.ErrorCode + " (" + error.HttpStatusCode + ")");
+                WrongNotification();
             });
     }
 
+    /* Return to Xtralife to register
+     */
     public void RegisterNetwork()
     {
         Application.OpenURL("https://account.clanofthecloud.com/");
     }
+    #endregion
 
-    public void CheckUser(string type, string value)
+    #region Notifications
+
+    /* Return notification
+     */
+    public void WrongNotification(string msg = "Failed to log")
     {
-        // cloud is an object retrieved at the beginning of the game through the CotcGameObject object.
-
-        Cloud.UserExists("email", "myEmail@gmail.com")
-        .Done(userExistsRes => {
-            foreach (var userInfo in userExistsRes)
-            {
-                Debug.Log("User: " + userExistsRes.ToString());
-            }
-        }, ex => {
-            // The exception should always be CotcException
-            CotcException error = (CotcException)ex;
-            Debug.LogError("Failed to check user: " + error.ErrorCode + " (" + error.ErrorInformation + ")");
-        });
+        UINotificationManager.instance.CreateNotification("wrong", msg);
     }
 
+    /* Return notification
+     */
     public void LoginNotification()
     {
         UINotificationManager.instance.CreateNotification("alert", "Logged");
     }
 
+    /* Return notification
+     */
+    public void LogoutNotification()
+    {
+        UINotificationManager.instance.CreateNotification("alert", "Logged out");
+    }
+
+    /* Return notification
+     */
     public void SaveNotification()
     {
         UINotificationManager.instance.CreateNotification("alert", "Saved");
     }
 
-    private bool RequireGamer()
+    #endregion
+
+
+    private bool GamerIsCreated()
     {
         if (Gamer == null)
             Debug.LogError("Gamer not created.");

@@ -159,6 +159,19 @@ public class GameMaster : MonoBehaviour
     }
 
 
+    /* Set coin
+     */
+    public void SetCoin(int amount = 0)
+    {
+        coins = amount;
+        coinsTextField.text = coins.ToString();
+
+        PlayerPrefs.SetInt("coins", coins);
+        PlayerPrefs.Save();
+
+    }
+
+
     /* Add coin
      */
     public void GetCoin(int amount = 1)
