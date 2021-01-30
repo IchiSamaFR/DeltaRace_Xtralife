@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -85,10 +86,72 @@ public class CollectionCosmetic : MonoBehaviour
         }
     }
 
+    public void SetPlanes(string planesString)
+    {
+        string[] planesArray = planesString.Split(',');
+        
+        foreach (plane p in planes)
+        {
+            bool found = false;
+            foreach (var item in planesArray)
+            {
+                if(p.name == item)
+                {
+                    PlayerPrefs.SetInt("planes_" + p.name, 1);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                PlayerPrefs.SetInt("planes_" + p.name, 0);
+            }
+        }
+
+        RefreshShop();
+    }
+    public void SetCharacters(string charactersString)
+    {
+        string[] charactersArray = charactersString.Split(',');
+
+        foreach (character c in characters)
+        {
+            bool found = false;
+            foreach (var item in charactersArray)
+            {
+                if (c.name == item)
+                {
+                    PlayerPrefs.SetInt("characters_" + c.name, 1);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                PlayerPrefs.SetInt("characters_" + c.name, 0);
+            }
+        }
+
+        RefreshShop();
+    }
+
+    public void DeleteAll()
+    {
+        foreach (plane p in planes)
+        {
+            PlayerPrefs.DeleteKey("planes_" + p.name);
+        }
+        foreach (character c in characters)
+        {
+            PlayerPrefs.DeleteKey("characters_" + c.name);
+        }
+    }
+
     /* Refresh shop buttons
      */
     void RefreshShop()
     {
+        string planeToSave = "";
         foreach (plane p in planes)
         {
             if (!p.unavailable)
@@ -98,6 +161,7 @@ public class CollectionCosmetic : MonoBehaviour
             if (PlayerPrefs.GetInt("planes_" + p.name) > 0)
             {
                 p.unavailable.SetActive(false);
+                planeToSave += p.name + ",";
             }
             else
             {
@@ -105,7 +169,8 @@ public class CollectionCosmetic : MonoBehaviour
                 p.unavailable.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = p.value.ToString();
             }
         }
-        
+
+        string charToSave = "";
         foreach (character c in characters)
         {
             if (!c.unavailable)
@@ -115,12 +180,19 @@ public class CollectionCosmetic : MonoBehaviour
             if (PlayerPrefs.GetInt("characters_" + c.name) > 0)
             {
                 c.unavailable.SetActive(false);
+                charToSave += c.name + ",";
             }
             else
             {
                 c.unavailable.SetActive(true);
                 c.unavailable.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = c.value.ToString();
             }
+        }
+
+        if (ConnectionManager.instance.connected)
+        {
+            ConnectionManager.instance.SetUserValues("deltaplanes", planeToSave);
+            ConnectionManager.instance.SetUserValues("characters", charToSave);
         }
     }
 
