@@ -1,3 +1,3 @@
 # Project
 
-Project created during a test for a job
+Project implemented by Xtralife to connect players.
